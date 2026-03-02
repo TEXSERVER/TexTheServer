@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tex Social</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg,#141e30,#243b55);
+    color: white;
+    display: flex;
+    justify-content: center;
+    padding: 30px;
+}
+
+.container {
+    width: 400px;
+    background: rgba(255,255,255,0.05);
+    padding: 20px;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+}
+
+button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.like-btn {
+    background: #ff4757;
+    color: white;
+    margin-bottom: 10px;
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    border-radius: 8px;
+    border: none;
+    margin-bottom: 10px;
+}
+
+.comment {
+    background: rgba(255,255,255,0.1);
+    padding: 8px;
+    border-radius: 8px;
+    margin-top: 5px;
+}
+
+.hidden {
+    display: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>🔥 TexTheServer</h2>
+
+    <div id="socialArea" class="hidden">
+        <button class="like-btn" onclick="like()">❤️ Curtir (<span id="likes">0</span>)</button>
+
+        <h3>💬 Comentários</h3>
+        <input type="text" id="comentario" placeholder="Escreva algo...">
+        <button onclick="comentar()">Enviar</button>
+        <div id="listaComentarios"></div>
+    </div>
+
+    <div id="loginArea">
+        <h3>🔐 Você não está logado</h3>
+        <input type="text" id="usuario" placeholder="Digite qualquer nome">
+        <input type="password" id="senha" placeholder="Senha (1234)">
+        <button onclick="login()">Entrar</button>
+        <div id="msg"></div>
+    </div>
+
+</div>
+
+<script>
+let usuarioLogado = localStorage.getItem("usuario");
+
+if(usuarioLogado){
+    mostrarSocial();
+}
+
+function login(){
+    let user = document.getElementById("usuario").value;
+    let pass = document.getElementById("senha").value;
+
+    if(user !== "" && pass === "1234"){
+        localStorage.setItem("usuario", user);
+        mostrarSocial();
+    } else {
+        document.getElementById("msg").innerText = "Senha incorreta!";
+        document.getElementById("msg").style.color = "red";
+    }
+}
+
+function mostrarSocial(){
+    document.getElementById("loginArea").classList.add("hidden");
+    document.getElementById("socialArea").classList.remove("hidden");
+    carregarComentarios();
+}
+
+let likes = localStorage.getItem("likes") || 0;
+document.getElementById("likes").innerText = likes;
+
+function like(){
+    likes++;
+    localStorage.setItem("likes", likes);
+    document.getElementById("likes").innerText = likes;
+}
+
+function comentar(){
+    let texto = document.getElementById("comentario").value;
+    if(texto.trim() === "") return;
+
+    let comentarios = JSON.parse(localStorage.getItem("comentarios")) || [];
+    let user = localStorage.getItem("usuario");
+    comentarios.push(user + ": " + texto);
+    localStorage.setItem("comentarios", JSON.stringify(comentarios));
+
+    document.getElementById("comentario").value = "";
+    carregarComentarios();
+}
+
+function carregarComentarios(){
+    let lista = document.getElementById("listaComentarios");
+    lista.innerHTML = "";
+    let comentarios = JSON.parse(localStorage.getItem("comentarios")) || [];
+
+    comentarios.forEach(c => {
+        let div = document.createElement("div");
+        div.className = "comment";
+        div.innerText = c;
+        lista.appendChild(div);
+    });
+}
+</script>
+
+</body>
+</html>
