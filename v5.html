@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tex Social V5 🔥</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial;
+    background:#0f0f0f;
+    color:white;
+}
+
+.banner{
+    height:120px;
+    background:linear-gradient(135deg,#1e3c72,#2a5298);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:22px;
+}
+
+.container{
+    padding:20px;
+    max-width:600px;
+    margin:auto;
+}
+
+.profile{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.profile img{
+    width:60px;
+    height:60px;
+    border-radius:50%;
+    object-fit:cover;
+}
+
+button{
+    padding:8px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    background:#2a5298;
+    color:white;
+}
+
+input{
+    padding:8px;
+    border-radius:8px;
+    border:none;
+    margin:5px 0;
+    width:100%;
+}
+
+.post{
+    background:#1c1c1c;
+    padding:15px;
+    border-radius:15px;
+    margin-top:15px;
+}
+
+.post img{
+    width:100%;
+    border-radius:10px;
+    margin-top:10px;
+}
+
+.like{
+    background:#ff3b5c;
+}
+
+.comment{
+    background:#2c2c2c;
+    padding:6px;
+    border-radius:6px;
+    margin-top:5px;
+}
+</style>
+</head>
+<body>
+
+<div class="banner">
+🔥 TEX SOCIAL V5
+</div>
+
+<div class="container">
+
+<h3>Perfil</h3>
+
+<input type="text" id="nome" placeholder="Seu nome">
+<input type="text" id="bio" placeholder="Sua bio">
+<input type="file" id="foto" accept="image/*">
+<button onclick="salvarPerfil()">Salvar Perfil</button>
+
+<div class="profile">
+<img id="fotoPerfil">
+<div>
+<h4 id="nomePerfil"></h4>
+<p id="bioPerfil"></p>
+</div>
+</div>
+
+<hr>
+
+<h3>Criar Post</h3>
+
+<input type="text" id="postTexto" placeholder="Escreva algo...">
+<input type="file" id="postImagem" accept="image/*">
+<button onclick="criarPost()">Postar</button>
+
+<div id="feed"></div>
+
+</div>
+
+<script>
+
+let posts = JSON.parse(localStorage.getItem("posts")) || [];
+
+function salvarPerfil(){
+    let nome = document.getElementById("nome").value;
+    let bio = document.getElementById("bio").value;
+    let foto = document.getElementById("foto").files[0];
+
+    if(nome=="") return alert("Coloca um nome!");
+
+    if(foto){
+        let reader = new FileReader();
+        reader.onload = function(e){
+            localStorage.setItem("fotoPerfil", e.target.result);
+        }
+        reader.readAsDataURL(foto);
+    }
+
+    localStorage.setItem("nomePerfil", nome);
+    localStorage.setItem("bioPerfil", bio);
+
+    carregarPerfil();
+}
+
+function carregarPerfil(){
+    document.getElementById("nomePerfil").innerText =
+        localStorage.getItem("nomePerfil") || "";
+
+    document.getElementById("bioPerfil").innerText =
+        localStorage.getItem("bioPerfil") || "";
+
+    let foto = localStorage.getItem("fotoPerfil");
+    if(foto){
+        document.getElementById("fotoPerfil").src = foto;
+    }
+}
+
+function criarPost(){
+    let texto = document.getElementById("postTexto").value;
+    let imgFile = document.getElementById("postImagem").files[0];
+
+    if(texto=="" && !imgFile) return alert("Escreve algo ou escolhe imagem!");
+
+    if(imgFile){
+        let reader = new FileReader();
+        reader.onload = function(e){
+            salvarPost(texto, e.target.result);
+        }
+        reader.readAsDataURL(imgFile);
+    } else {
+        salvarPost(texto, null);
+    }
+}
+
+function salvarPost(texto, imagem){
+    posts.push({
+        texto:texto,
+        imagem:imagem,
+        likes:0,
+        comentarios:[]
+    });
+
+    localStorage.setItem("posts", JSON.stringify(posts));
+    carregarFeed();
+}
+
+function carregarFeed(){
+    let feed = document.getElementById("feed");
+    feed.innerHTML="";
+
+    posts.forEach((post,index)=>{
+        let div = document.createElement("div");
+        div.className="post";
+
+        div.innerHTML = `
+        <p>${post.texto}</p>
+        ${post.imagem ? `<img src="${post.imagem}">` : ""}
+        <button class="like" onclick="curtir(${index})">
+        ❤️ ${post.likes}
+        </button>
+
+        <input type="text" id="c${index}" placeholder="Comentar...">
+        <button onclick="comentar(${index})">Enviar</button>
+
+        <div id="comentarios${index}">
+        </div>
+        `;
+
+        feed.appendChild(div);
+
+        post.comentarios.forEach(c=>{
+            let comentarioDiv=document.createElement("div");
+            comentarioDiv.className="comment";
+            comentarioDiv.innerText=c;
+            document.getElementById("comentarios"+index).appendChild(comentarioDiv);
+        });
+    });
+}
+
+function curtir(index){
+    posts[index].likes++;
+    localStorage.setItem("posts", JSON.stringify(posts));
+    carregarFeed();
+}
+
+function comentar(index){
+    let texto=document.getElementById("c"+index).value;
+    if(texto=="") return;
+
+    posts[index].comentarios.push(texto);
+    localStorage.setItem("posts", JSON.stringify(posts));
+    carregarFeed();
+}
+
+carregarPerfil();
+carregarFeed();
+
+</script>
+
+</body>
+</html>
