@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Livre</title>
+
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            font-family: Arial, sans-serif;
+        }
+
+        .login-box {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 300px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            background: #2c5364;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .mensagem {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-box">
+        <h2>🔐 Login Teste</h2>
+        <input type="text" id="usuario" placeholder="Digite qualquer nome">
+        <input type="password" id="senha" placeholder="Senha (1234)">
+        <button onclick="verificar()">Entrar</button>
+        <div class="mensagem" id="msg"></div>
+    </div>
+
+    <script>
+        function verificar() {
+            var user = document.getElementById("usuario").value;
+            var pass = document.getElementById("senha").value;
+
+            if (user !== "" && pass === "1234") {
+                document.getElementById("msg").innerHTML = "✅ Bem-vindo, " + user + "!";
+                document.getElementById("msg").style.color = "green";
+            } else {
+                document.getElementById("msg").innerHTML = "❌ Senha incorreta ou nome vazio!";
+                document.getElementById("msg").style.color = "red";
+            }
+        }
+    </script>
+
+</body>
+</html>
